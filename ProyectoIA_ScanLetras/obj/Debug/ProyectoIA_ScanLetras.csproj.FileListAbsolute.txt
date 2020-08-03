@@ -1,0 +1,15 @@
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\bin\Debug\ProyectoIA_ScanLetras.exe.config
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\bin\Debug\ProyectoIA_ScanLetras.exe
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\bin\Debug\ProyectoIA_ScanLetras.pdb
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\obj\Debug\ProyectoIA_ScanLetras.csprojAssemblyReference.cache
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\obj\Debug\MainWindow.g.cs
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\obj\Debug\App.g.cs
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\obj\Debug\ProyectoIA_ScanLetras_MarkupCompile.cache
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\obj\Debug\ProyectoIA_ScanLetras_MarkupCompile.lref
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\obj\Debug\MainWindow.baml
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\obj\Debug\ProyectoIA_ScanLetras.g.resources
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\obj\Debug\ProyectoIA_ScanLetras.Properties.Resources.resources
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\obj\Debug\ProyectoIA_ScanLetras.csproj.GenerateResource.cache
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\obj\Debug\ProyectoIA_ScanLetras.csproj.CoreCompileInputs.cache
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\obj\Debug\ProyectoIA_ScanLetras.exe
+C:\Users\Luis\source\repos\ProyectoIA_ScanLetras\ProyectoIA_ScanLetras\obj\Debug\ProyectoIA_ScanLetras.pdb
