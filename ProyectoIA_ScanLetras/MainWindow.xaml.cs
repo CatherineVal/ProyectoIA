@@ -18,29 +18,87 @@ namespace ProyectoIA_ScanLetras
     /// <summary>
     /// Lógica de interacción para MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window        
     {
+        const int NEURONASCAPAOCULTA = 3;
+        const int NEURONASSALIDA = 2;
+        const int ENTRADAS = 2;
+        const int EPOCAS = 20;
+
         public MainWindow()
         {
-            InitializeComponent();
-            for (int i = 0; i < 63; i++)
+            // InitializeComponent();
+
+            //carga de los patrones contenidos en el el archivo
+            String[] patrones = System.IO.File.ReadAllLines("../../patrones.txt");
+            int npatrones = patrones.Length;
+            String[] targets = System.IO.File.ReadAllLines("../../targets.txt");
+
+            /////////////////////////////////Inicializacion de objetos necesarios//////////////////////////////////
+            ///            
+
+            //Instanciacion de la capa oculta y la de salida
+            Capa capaOculta = new Capa(NEURONASCAPAOCULTA);
+            Capa capaSalida = new Capa(NEURONASSALIDA);
+
+            //Funcion de activacion que se le pasa a la capa, para ser utilizado por todas las neuronas de esa capa
+            FuncionActivacion funcion = new FuncionActivacion();
+            capaOculta.FUNCION = funcion;
+            capaSalida.FUNCION = funcion;
+
+            //Inicializacion de los pesos de las capas
+            Random r = new Random();
+            capaOculta.InicializaPesos(1, ENTRADAS,r);
+            capaSalida.InicializaPesos(1, NEURONASCAPAOCULTA,r);
+
+
+
+                                        ////////////////////////////////////////////////
+            ////////////////////////////////Inicio del Entrenamiento retropropagacion//////////////////////////////
+                                        ////////////////////////////////////////////////
+                                        
+            //Ciclo externo, segun el numero de epocas
+            for (int i = 0; i < EPOCAS; i++)
             {
-                letra.Children.Add(new RadioButton() {Name="rb"+i});
+                //Ciclo Interno, segun el numero de patrones de muestra
+                for (int j = 0; j < npatrones; j++)
+                {
+    //<----Paso 1----> ///////Propagar hacia adelante///////
+
+                    //Le pasamos las entradas recolecadas del archivo a la lista de entradas de la capa oculta
+                    List<double> entradas1 = new List<double>();                    
+                    for (int k = 0; k < patrones[j].Length; k++)
+                    {
+                        entradas1.Add(Double.Parse(patrones[j].Substring(k,1)));
+                    }
+                    capaOculta.ENTRADAS = entradas1;
+
+                    //Calculamos Y, Fy de la primera capa
+                    capaOculta.CalcularY();
+                    capaOculta.CalcularFy();
+
+                    //Propagamos el vector Fy como entradas de la capa de salida
+                    List<double> entradas2 = new List<double>();
+                    foreach (var neurona in capaOculta.NEURONAS)
+                    {
+                        entradas2.Add(neurona.FY);
+                    }
+                    capaSalida.ENTRADAS = entradas2;
+
+                    //Calculamos Y, Fy de la segunda capa
+                    capaSalida.CalcularY();
+                    capaSalida.CalcularFy();
+
+ //<----Paso 2----> ///////Propagar hacia atras///////
+                    
+
+                }
+                break;
             }
-            for (int i = 0; i < 9; i++)
-            {
-                botonesd.Children.Add(new Button() { Name = "btd" + i, Height=14 });
-            }
-            for (int i = 0; i < 7; i++)
-            {
-                botonesi.Children.Add(new Button() { Name = "bti" + i, Width=15});
-            }
-            for (int i = 0; i < 3; i++)
-            {
-                tipos.Items.Add("Letra A Tipo " + (i+1));
-                tipos.Items.Add("Letra B Tipo " + (i+1));
-                tipos.Items.Add("Letra C Tipo " + (i+1));
-            }
+
+
+ 
+
         }
 
 
@@ -56,11 +114,20 @@ namespace ProyectoIA_ScanLetras
 
     class Capa
     {
-        public void InicializaPesos(int umbral)
+        public Capa(int s)
+        {
+            neuronas = new List<Neurona>();
+            for (int i = 0; i < s; i++)
+            {
+                neuronas.Add(new Neurona());
+            }
+        }
+
+        public void InicializaPesos(int umbral,int nPesos,Random r)
         {
             foreach (var neurona in neuronas)
             {
-                neurona.InicializaPesos(umbral, entradas.Count);
+                neurona.InicializaPesos(umbral,nPesos, r);
             }
         }
 
@@ -90,14 +157,13 @@ namespace ProyectoIA_ScanLetras
 
     class Neurona
     {
-        public void InicializaPesos(int umbral, int tamaño)
+        public void InicializaPesos(int umbral, int tamaño,Random r)
         {
             pesos = new List<double>();
-            Random r = new Random();
-            b = r.Next(-umbral, umbral);
+            b = 2*umbral*r.NextDouble()-umbral;
             for (int i = 0; i < tamaño; i++)
             {
-                pesos.Add(r.Next(-umbral, umbral));
+                pesos.Add(2 *umbral*r.NextDouble() - umbral);
             }         
         }
 
