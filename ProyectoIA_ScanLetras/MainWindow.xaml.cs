@@ -113,7 +113,39 @@ namespace ProyectoIA_ScanLetras
                         neurona.CalcularSM(funcion);
                     }
 
-                    
+                    //Calcular la sensibilidad de la capa oculta y de paso actualizamos pesos
+                    Neurona neuronaTemp;
+                    for (int l = 0; l < capaSalida.NEURONAS.Count; l++)
+                    {
+                        neuronaTemp = capaSalida.NEURONAS.ElementAt(l);
+                        for (int k = 0; k < capaOculta.NEURONAS.Count; k++)
+                        {
+                            double sigw = neuronaTemp.PESOS.ElementAt(k);
+                            double sigs = neuronaTemp.S;
+                            capaOculta.NEURONAS.ElementAt(k).CalcularS(funcion, sigw, sigs);
+                        }
+
+                        //Actualizamos los pesos sinapticos de la ultima capa                        
+                        List<double> wtemp = new List<double>();
+                        for (int n = 0; n < neuronaTemp.PESOS.Count; n++)
+                        {
+                            wtemp.Add(neuronaTemp.PESOS.ElementAt(n) - ALFA * neuronaTemp.S * capaSalida.ENTRADAS.ElementAt(n));
+                        }
+                        neuronaTemp.PESOS = wtemp;
+                        neuronaTemp.B -= ALFA * neuronaTemp.S;
+
+                        //Actualizamos los pesos sinapticos de la capa oculta
+                        wtemp = new List<double>();
+                        foreach (var neurona in capaOculta.NEURONAS)
+                        {
+                            for (int m = 0; m < neurona.PESOS.Count; m++)
+                            {
+                                wtemp.Add(neurona.PESOS.ElementAt(m) - ALFA * neurona.S * capaOculta.ENTRADAS.ElementAt(m));
+                            }
+                            neurona.B -= ALFA * neurona.S;
+                        }
+
+                    }
 
 
                 }
