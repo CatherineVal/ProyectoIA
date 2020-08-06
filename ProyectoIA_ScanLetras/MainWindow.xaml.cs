@@ -107,7 +107,13 @@ namespace ProyectoIA_ScanLetras
                     }
                     capaSalida.CalcularE(t);
 
-                                     
+                    //Calcular la sensibilidad de la ultima capa
+                    foreach (var neurona in capaSalida.NEURONAS)
+                    {
+                        neurona.CalcularSM(funcion);
+                    }
+
+                    
 
 
                 }
