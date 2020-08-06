@@ -24,6 +24,7 @@ namespace ProyectoIA_ScanLetras
         const int NEURONASSALIDA = 2;
         const int ENTRADAS = 2;
         const int EPOCAS = 20;
+        const double ALFA = 0.001;
 
         public MainWindow()
         {
@@ -63,7 +64,7 @@ namespace ProyectoIA_ScanLetras
                 //Ciclo Interno, segun el numero de patrones de muestra
                 for (int j = 0; j < npatrones; j++)
                 {
-    //<----Paso 1----> ///////Propagar hacia adelante///////
+     //<----Paso 1----> ///////Propagar hacia adelante////////////////////////////////////////////////////////////////////////////
 
                     //Le pasamos las entradas recolecadas del archivo a la lista de entradas de la capa oculta
                     List<double> entradas1 = new List<double>();                    
@@ -89,26 +90,44 @@ namespace ProyectoIA_ScanLetras
                     capaSalida.CalcularY();
                     capaSalida.CalcularFy();
 
- //<----Paso 2----> ///////Propagar hacia atras///////
-                    
+     //<----Paso 2----> ///////Propagar hacia atras////////////////////////////////////////////////////////////////////////////////
+
+                    //Calculo del error, hay que transformar la cadena de estring a numeros, y los ceros a -1
+                    List<double> t = new List<double>();
+                    foreach (var item in targets.ElementAt(j))
+                    {
+                        if (item.Equals('0'))
+                        {
+                            t.Add(-1);
+                        }
+                        else
+                        {
+                            t.Add(1);
+                        }
+                    }
+                    capaSalida.CalcularE(t);
+
+                                     
+
 
                 }
-                break;
+               
             }
 
-
- 
 
         }
 
 
 
+        //    double sigw = sigCapa.neuronas.ElementAt(0).PESOS.ElementAt(0);
+        //    double sigs = sigCapa.neuronas.ElementAt(0).S;
+        //    //obtengo la neurona objetivo 
+        //    for (int i = 0; i < neuronas.Count; i++)
+        //    {
+        //        neuronas.ElementAt(i).CalcularS(funcion, sigCapa.neuronas.ElementAt(i).PESOS.ElementAt(i), sigCapa.);
+        //    }
+        //}
 
-        ////////////////////////////////Metodos/////////////////////////////////
-
-
-        //////////////////////definicion de variables//////////////////////////
-        private double alfa = 0.001;
     }
 
 
@@ -147,6 +166,14 @@ namespace ProyectoIA_ScanLetras
             }
         }
 
+        public void CalcularE(List<double> target)
+        {
+            for (int i = 0; i < neuronas.Count; i++)
+            {
+                neuronas.ElementAt(i).CalcularE(target.ElementAt(i));
+            }
+        }
+
         public List<double> ENTRADAS { set => entradas = value; get => entradas; }
         public List<Neurona> NEURONAS { set => neuronas = value; get => neuronas; }
         public FuncionActivacion FUNCION { set => funcion = value; get => funcion; }
@@ -176,7 +203,7 @@ namespace ProyectoIA_ScanLetras
             }
             sum += b;
             y = sum;
-            return sum;
+            return y;
         }
 
         public double CalcularFy(FuncionActivacion funcion)
@@ -185,15 +212,38 @@ namespace ProyectoIA_ScanLetras
             return fy;
         }
 
+        public double CalcularE(double target)
+        {
+            e = target - fy;
+            return e;
+        }
+
+        public double CalcularSM(FuncionActivacion funcion)
+        {
+            s = -2 * funcion.evaluarF(y) * e;
+            return s;
+        }
+
+        public double CalcularS(FuncionActivacion funcion, double wm, double sm)
+        {
+            s = funcion.evaluarF(y) * sm * wm;
+            return s;
+        }
+
+
         ////////////////////////////Propieties////////////////////////////
         public List<double> PESOS { set => pesos = value; get => pesos; }
         public double Y { set => y = value; get => y; }
         public double FY { set => fy = value; get => fy; }
         public double B { set => b = value; get => b; }
+        public double E { set => e = value; get => e; }
+        public double S { set => s = value; get => s; }
         //////////////////////Definicion de variables/////////////////////
         private double y;
         private double fy;
         private double b;
+        private double e;
+        private double s;
         private List<double> pesos;
     }
 
@@ -202,6 +252,11 @@ namespace ProyectoIA_ScanLetras
         public double evaluar(double y)
         {
             return ((Math.Exp(y) - Math.Exp(-y)) / (Math.Exp(y) + Math.Exp(-y)));
+        }
+
+        public double evaluarF(double fy)
+        {
+            return 1-(fy*fy);
         }
     }
 }
