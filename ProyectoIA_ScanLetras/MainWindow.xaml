@@ -8,16 +8,23 @@
         Title="ProyectoIA" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="0.2*"/>
+            <ColumnDefinition Width="200"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+        <StackPanel Grid.Column="0" Background="#0379cc">
+            <Label Content="Entrada 1" Foreground="White"></Label>
+            <TextBox Margin="5,0" Name="txt1"></TextBox>
+            <Label Content="Entrada 2" Foreground="White"></Label>
+            <TextBox Margin="5,0" Name="txt2"></TextBox>
+            <Label Content="Activacion" Foreground="White"></Label>
+            <TextBlock Name="txt3"></TextBlock>
+            <Button Content="Calcular Salida" Foreground="White" Background="{x:Null}" Height="30" Click="Button_Click"/>
+            <Button Margin="0,5" Click="Entrenar" Background="{x:Null}">Entrenar</Button>
+        </StackPanel>
 
-        <TextBlock Name="texto"></TextBlock>
-        <!--****************************************************************************************-->
+        <ScrollViewer Grid.Column="1">
+            <TextBlock  Name="salida" TextWrapping="Wrap"></TextBlock>
+        </ScrollViewer>
     </Grid>
 </Window>

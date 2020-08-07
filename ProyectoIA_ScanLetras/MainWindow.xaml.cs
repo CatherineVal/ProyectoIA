@@ -21,29 +21,35 @@ namespace ProyectoIA_ScanLetras
     public partial class MainWindow : Window        
     {
         const int NEURONASCAPAOCULTA = 3;
-        const int NEURONASSALIDA = 2;
+        const int NEURONASSALIDA = 1;
         const int ENTRADAS = 2;
-        const int EPOCAS = 20;
+        const int EPOCAS = 10000;
         const double ALFA = 0.001;
+
+        Capa capaOculta;
+        Capa capaSalida;
+        String[] patrones;
+        int npatrones;
+        String[] targets;
+        FuncionActivacion funcion;
 
         public MainWindow()
         {
-            // InitializeComponent();
+             InitializeComponent();
 
             //carga de los patrones contenidos en el el archivo
-            String[] patrones = System.IO.File.ReadAllLines("../../patrones.txt");
-            int npatrones = patrones.Length;
-            String[] targets = System.IO.File.ReadAllLines("../../targets.txt");
-
-            /////////////////////////////////Inicializacion de objetos necesarios//////////////////////////////////
-            ///            
+            patrones = System.IO.File.ReadAllLines(@"C:\Users\Luis\Desktop\p.txt");
+            npatrones = patrones.Length;
+            targets = System.IO.File.ReadAllLines(@"C:\Users\Luis\Desktop\t.txt");
+            
+            /////////////////////////////////Inicializacion de objetos necesarios//////////////////////////////////          
 
             //Instanciacion de la capa oculta y la de salida
-            Capa capaOculta = new Capa(NEURONASCAPAOCULTA);
-            Capa capaSalida = new Capa(NEURONASSALIDA);
+            capaOculta = new Capa(NEURONASCAPAOCULTA);
+            capaSalida = new Capa(NEURONASSALIDA);
 
             //Funcion de activacion que se le pasa a la capa, para ser utilizado por todas las neuronas de esa capa
-            FuncionActivacion funcion = new FuncionActivacion();
+            funcion = new FuncionActivacion();
             capaOculta.FUNCION = funcion;
             capaSalida.FUNCION = funcion;
 
@@ -54,43 +60,40 @@ namespace ProyectoIA_ScanLetras
 
 
 
-                                        ////////////////////////////////////////////////
+            ////////////////////////////////////////////////////////////////////////////////////////////////
             ////////////////////////////////Inicio del Entrenamiento retropropagacion//////////////////////////////
-                                        ////////////////////////////////////////////////
-                                        
+            ////////////////////////////////////////////////////////////////////////////////////////////////
+
+            List<double> entradas;
+
             //Ciclo externo, segun el numero de epocas
             for (int i = 0; i < EPOCAS; i++)
             {
                 //Ciclo Interno, segun el numero de patrones de muestra
                 for (int j = 0; j < npatrones; j++)
                 {
-     //<----Paso 1----> ///////Propagar hacia adelante////////////////////////////////////////////////////////////////////////////
+                    //<----Paso 1----> ///////Propagar hacia adelante////////////////////////////////////////////////////////////////////////////
 
                     //Le pasamos las entradas recolecadas del archivo a la lista de entradas de la capa oculta
-                    List<double> entradas1 = new List<double>();                    
+                    entradas = new List<double>();
                     for (int k = 0; k < patrones[j].Length; k++)
                     {
-                        entradas1.Add(Double.Parse(patrones[j].Substring(k,1)));
+                        entradas.Add(Double.Parse(patrones[j].Substring(k, 1)));
                     }
-                    capaOculta.ENTRADAS = entradas1;
+                    capaOculta.ENTRADAS = entradas;
 
                     //Calculamos Y, Fy de la primera capa
                     capaOculta.CalcularY();
                     capaOculta.CalcularFy();
 
-                    //Propagamos el vector Fy como entradas de la capa de salida
-                    List<double> entradas2 = new List<double>();
-                    foreach (var neurona in capaOculta.NEURONAS)
-                    {
-                        entradas2.Add(neurona.FY);
-                    }
-                    capaSalida.ENTRADAS = entradas2;
+                    //Propagamos el vector Fy como entradas de la capa de salida                    
+                    capaSalida.ENTRADAS = capaOculta.obtenerfys();
 
                     //Calculamos Y, Fy de la segunda capa
                     capaSalida.CalcularY();
                     capaSalida.CalcularFy();
 
-     //<----Paso 2----> ///////Propagar hacia atras////////////////////////////////////////////////////////////////////////////////
+                    //<----Paso 2----> ///////Propagar hacia atras////////////////////////////////////////////////////////////////////////////////
 
                     //Calculo del error, hay que transformar la cadena de estring a numeros, y los ceros a -1
                     List<double> t = new List<double>();
@@ -108,9 +111,11 @@ namespace ProyectoIA_ScanLetras
                     capaSalida.CalcularE(t);
 
                     //Calcular la sensibilidad de la ultima capa
-                    foreach (var neurona in capaSalida.NEURONAS)
+                    capaSalida.CalcularSM();
+
+                    if (j == 0)
                     {
-                        neurona.CalcularSM(funcion);
+                        salida.Text = salida.Text + "\n" + capaSalida.NEURONAS.First().E;
                     }
 
                     //Calcular la sensibilidad de la capa oculta y de paso actualizamos pesos
@@ -149,23 +154,121 @@ namespace ProyectoIA_ScanLetras
 
 
                 }
-               
+
             }
 
-
+            /////////////////////////////////////////Fin Entrenamiento/////////////////////////////////////////////////////////
         }
 
+        private void Entrenar(object sender, RoutedEventArgs e)
+        {
+            List<double> entradas;
+
+            //Ciclo externo, segun el numero de epocas
+            for (int i = 0; i < EPOCAS; i++)
+            {
+                //Ciclo Interno, segun el numero de patrones de muestra
+                for (int j = 0; j < npatrones; j++)
+                {
+                    //<----Paso 1----> ///////Propagar hacia adelante////////////////////////////////////////////////////////////////////////////
+
+                    //Le pasamos las entradas recolecadas del archivo a la lista de entradas de la capa oculta
+                    entradas = new List<double>();
+                    for (int k = 0; k < patrones[j].Length; k++)
+                    {
+                        entradas.Add(Double.Parse(patrones[j].Substring(k, 1)));
+                    }
+                    capaOculta.ENTRADAS = entradas;
+
+                    //Calculamos Y, Fy de la primera capa
+                    capaOculta.CalcularY();
+                    capaOculta.CalcularFy();
+
+                    //Propagamos el vector Fy como entradas de la capa de salida                    
+                    capaSalida.ENTRADAS = capaOculta.obtenerfys();
+
+                    //Calculamos Y, Fy de la segunda capa
+                    capaSalida.CalcularY();
+                    capaSalida.CalcularFy();
+
+                    //<----Paso 2----> ///////Propagar hacia atras////////////////////////////////////////////////////////////////////////////////
+
+                    //Calculo del error, hay que transformar la cadena de estring a numeros, y los ceros a -1
+                    List<double> t = new List<double>();
+                    foreach (var item in targets.ElementAt(j))
+                    {
+                        if (item.Equals('0'))
+                        {
+                            t.Add(-1);
+                        }
+                        else
+                        {
+                            t.Add(1);
+                        }
+                    }
+                    capaSalida.CalcularE(t);
+
+                    //Calcular la sensibilidad de la ultima capa
+                    capaSalida.CalcularSM();
+
+                    if (j == 0)
+                    {
+                        salida.Text = salida.Text + "\n" + capaSalida.NEURONAS.First().E;
+                    }
+
+                    //Calcular la sensibilidad de la capa oculta y de paso actualizamos pesos
+                    Neurona neuronaTemp;
+                    for (int l = 0; l < capaSalida.NEURONAS.Count; l++)
+                    {
+                        neuronaTemp = capaSalida.NEURONAS.ElementAt(l);
+                        for (int k = 0; k < capaOculta.NEURONAS.Count; k++)
+                        {
+                            double sigw = neuronaTemp.PESOS.ElementAt(k);
+                            double sigs = neuronaTemp.S;
+                            capaOculta.NEURONAS.ElementAt(k).CalcularS(funcion, sigw, sigs);
+                        }
+
+                        //Actualizamos los pesos sinapticos de la ultima capa                        
+                        List<double> wtemp = new List<double>();
+                        for (int n = 0; n < neuronaTemp.PESOS.Count; n++)
+                        {
+                            wtemp.Add(neuronaTemp.PESOS.ElementAt(n) - ALFA * neuronaTemp.S * capaSalida.ENTRADAS.ElementAt(n));
+                        }
+                        neuronaTemp.PESOS = wtemp;
+                        neuronaTemp.B -= ALFA * neuronaTemp.S;
+
+                        //Actualizamos los pesos sinapticos de la capa oculta
+                        wtemp = new List<double>();
+                        foreach (var neurona in capaOculta.NEURONAS)
+                        {
+                            for (int m = 0; m < neurona.PESOS.Count; m++)
+                            {
+                                wtemp.Add(neurona.PESOS.ElementAt(m) - ALFA * neurona.S * capaOculta.ENTRADAS.ElementAt(m));
+                            }
+                            neurona.B -= ALFA * neurona.S;
+                        }
+
+                    }
 
 
-        //    double sigw = sigCapa.neuronas.ElementAt(0).PESOS.ElementAt(0);
-        //    double sigs = sigCapa.neuronas.ElementAt(0).S;
-        //    //obtengo la neurona objetivo 
-        //    for (int i = 0; i < neuronas.Count; i++)
-        //    {
-        //        neuronas.ElementAt(i).CalcularS(funcion, sigCapa.neuronas.ElementAt(i).PESOS.ElementAt(i), sigCapa.);
-        //    }
-        //}
+                }
 
+            }
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            List<double> entradas = new List<double>();
+            entradas.Add(double.Parse(txt1.Text));
+            entradas.Add(double.Parse(txt2.Text));
+            capaOculta.ENTRADAS = entradas;
+            capaOculta.CalcularY();
+            capaOculta.CalcularFy();
+            capaSalida.ENTRADAS = capaOculta.obtenerfys();
+            capaSalida.CalcularY();
+            capaSalida.CalcularFy();
+            txt3.Text = ""+capaSalida.NEURONAS.First().FY;
+        }
     }
 
 
@@ -209,6 +312,24 @@ namespace ProyectoIA_ScanLetras
             for (int i = 0; i < neuronas.Count; i++)
             {
                 neuronas.ElementAt(i).CalcularE(target.ElementAt(i));
+            }
+        }
+
+        public List<double> obtenerfys()
+        {
+            List<double> s = new List<double>();
+            foreach (var neurona in neuronas)
+            {
+                s.Add(neurona.FY);
+            }
+            return s;
+        }
+
+        public void CalcularSM()
+        {
+            foreach (var neurona in neuronas)
+            {
+                neurona.CalcularSM(funcion);
             }
         }
 
@@ -294,7 +415,7 @@ namespace ProyectoIA_ScanLetras
 
         public double evaluarF(double fy)
         {
-            return 1-(fy*fy);
+            return (1-(fy*fy));
         }
     }
 }
