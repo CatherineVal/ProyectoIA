@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,10 +23,11 @@ namespace ProyectoIA_ScanLetras
     public partial class MainWindow : Window        
     {
         const int NEURONASCAPAOCULTA = 3;
-        const int NEURONASSALIDA = 1;
-        const int ENTRADAS = 2;
-        const int EPOCAS = 10000;
-        const double ALFA = 0.001;
+        const int NEURONASSALIDA = 5;
+        const int ENTRADAS = 63;
+        const int EPOCAS = 10;
+        const double UMBRAL = 1;
+        const double ALFA = 0.0001;
 
         Capa capaOculta;
         Capa capaSalida;
@@ -32,16 +35,36 @@ namespace ProyectoIA_ScanLetras
         int npatrones;
         String[] targets;
         FuncionActivacion funcion;
+        List<Rectangle> puntos;
 
         public MainWindow()
         {
-             InitializeComponent();
+            InitializeComponent();
+            //Para el area de dibujo de la letra
+            puntos = new List<Rectangle>();
+            Rectangle temp;
+            for (int i = 0; i < ENTRADAS; i++)
+            {
+                temp = new Rectangle() { Width = 20, Height = 20, Fill = Brushes.White };
+                temp.MouseLeftButtonDown += cambio;
+                puntos.Add(temp);
+                puntosLetra.Children.Add(temp);
+            }
+            ////////////////////////////////////
 
-            //carga de los patrones contenidos en el el archivo
-            patrones = System.IO.File.ReadAllLines(@"C:\Users\Luis\Desktop\p.txt");
+            //Para el llenado de combobox
+            String letras = "ABCDEJK";
+            for (int i = 0; i < letras.Length; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    cboxLetras.Items.Add($"Letras {letras[i]} tipo {j+1}");
+                }
+            }
+
+            patrones = System.IO.File.ReadAllLines("../../patrones.txt");
             npatrones = patrones.Length;
-            targets = System.IO.File.ReadAllLines(@"C:\Users\Luis\Desktop\t.txt");
-            
+            targets = System.IO.File.ReadAllLines("../../targets.txt");
             /////////////////////////////////Inicializacion de objetos necesarios//////////////////////////////////          
 
             //Instanciacion de la capa oculta y la de salida
@@ -55,8 +78,8 @@ namespace ProyectoIA_ScanLetras
 
             //Inicializacion de los pesos de las capas
             Random r = new Random();
-            capaOculta.InicializaPesos(1, ENTRADAS,r);
-            capaSalida.InicializaPesos(1, NEURONASCAPAOCULTA,r);
+            capaOculta.InicializaPesos(UMBRAL, ENTRADAS,r);
+            capaSalida.InicializaPesos(UMBRAL, NEURONASCAPAOCULTA,r);
 
 
 
@@ -69,6 +92,10 @@ namespace ProyectoIA_ScanLetras
             //Ciclo externo, segun el numero de epocas
             for (int i = 0; i < EPOCAS; i++)
             {
+                if (i>0 && capaSalida.NEURONAS.First().E > -0.1 && capaSalida.NEURONAS.First().E < 0.1)
+                {
+                    break;
+                }
                 //Ciclo Interno, segun el numero de patrones de muestra
                 for (int j = 0; j < npatrones; j++)
                 {
@@ -151,7 +178,10 @@ namespace ProyectoIA_ScanLetras
                         }
 
                     }
-
+                    if (capaSalida.NEURONAS.First().E < 0.1)
+                    {
+                        break;
+                    }
 
                 }
 
@@ -162,11 +192,16 @@ namespace ProyectoIA_ScanLetras
 
         private void Entrenar(object sender, RoutedEventArgs e)
         {
+            salida.Text = "";
             List<double> entradas;
 
             //Ciclo externo, segun el numero de epocas
             for (int i = 0; i < EPOCAS; i++)
             {
+                if (i > 0 && capaSalida.NEURONAS.First().E > -0.1 && capaSalida.NEURONAS.First().E<0.1)
+                {
+                    break;
+                }
                 //Ciclo Interno, segun el numero de patrones de muestra
                 for (int j = 0; j < npatrones; j++)
                 {
@@ -250,7 +285,10 @@ namespace ProyectoIA_ScanLetras
 
                     }
 
-
+                    if (capaSalida.NEURONAS.First().E < 0.1)
+                    {
+                        break;
+                    }
                 }
 
             }
@@ -258,16 +296,52 @@ namespace ProyectoIA_ScanLetras
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            List<double> entradas = new List<double>();
-            entradas.Add(double.Parse(txt1.Text));
-            entradas.Add(double.Parse(txt2.Text));
-            capaOculta.ENTRADAS = entradas;
-            capaOculta.CalcularY();
-            capaOculta.CalcularFy();
-            capaSalida.ENTRADAS = capaOculta.obtenerfys();
-            capaSalida.CalcularY();
-            capaSalida.CalcularFy();
-            txt3.Text = ""+capaSalida.NEURONAS.First().FY;
+           
+        }
+
+        private void cambio(object sender, RoutedEventArgs e)
+        {
+            var temp = (Rectangle)e.Source;
+            if (temp.Fill.Equals(Brushes.White))
+            {
+                temp.Fill = Brushes.Black;
+            }
+            else
+            {
+                temp.Fill = Brushes.White;
+            }
+        }
+
+        private void VerificarLetra()
+        {
+
+        }
+
+        private void cboxLetras_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cboxLetras.SelectedIndex>-1)
+            {
+                for (int i = 0; i < patrones.ElementAt(cboxLetras.SelectedIndex).Length; i++)
+                {
+                    if (patrones.ElementAt(cboxLetras.SelectedIndex).ElementAt(i) == '1')
+                    {
+                        puntos.ElementAt(i).Fill = Brushes.Black;
+                    }
+                    else
+                    {
+                        puntos.ElementAt(i).Fill = Brushes.White;
+                    }
+                }
+            }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            foreach (var item in puntos)
+            {
+                item.Fill = Brushes.White;
+            }
+            cboxLetras.SelectedIndex = -1;
         }
     }
 
@@ -283,7 +357,7 @@ namespace ProyectoIA_ScanLetras
             }
         }
 
-        public void InicializaPesos(int umbral,int nPesos,Random r)
+        public void InicializaPesos(double umbral,int nPesos,Random r)
         {
             foreach (var neurona in neuronas)
             {
@@ -343,7 +417,7 @@ namespace ProyectoIA_ScanLetras
 
     class Neurona
     {
-        public void InicializaPesos(int umbral, int tamaño,Random r)
+        public void InicializaPesos(double umbral, int tamaño,Random r)
         {
             pesos = new List<double>();
             b = 2*umbral*r.NextDouble()-umbral;
@@ -418,4 +492,6 @@ namespace ProyectoIA_ScanLetras
             return (1-(fy*fy));
         }
     }
+
+  
 }

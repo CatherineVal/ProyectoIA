@@ -8,19 +8,31 @@
         Title="ProyectoIA" Height="450" Width="800">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="150"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
         <StackPanel Grid.Column="0" Background="#0379cc">
-            <Label Content="Entrada 1" Foreground="White"></Label>
-            <TextBox Margin="5,0" Name="txt1"></TextBox>
-            <Label Content="Entrada 2" Foreground="White"></Label>
-            <TextBox Margin="5,0" Name="txt2"></TextBox>
-            <Label Content="Activacion" Foreground="White"></Label>
-            <TextBlock Name="txt3"></TextBlock>
-            <Button Content="Calcular Salida" Foreground="White" Background="{x:Null}" Height="30" Click="Button_Click"/>
-            <Button Margin="0,5" Click="Entrenar" Background="{x:Null}">Entrenar</Button>
+            <WrapPanel Name="puntosLetra" Height="180" Width="140" Background="White" Margin="0,5"/>
+            
+            <Button Content="Limpiar" Background="{x:Null}" Width="45" Foreground="White" Click="Button_Click_1" BorderBrush="White" HorizontalAlignment="Left" Margin="5,0,0,5"/>
+            <Separator Height="5"/>
+            <Label Foreground="White">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Margin="5,0">Letra</TextBlock>
+                    <ComboBox Name="cboxLetras" Margin="5,0" Width="100" SelectionChanged="cboxLetras_SelectionChanged"/>
+                </StackPanel>
+            </Label>
+            <Button Content="Calcular Salida" Foreground="White" Background="{x:Null}" Height="30" Margin="5,0" Click="Button_Click" BorderBrush="White"/>
+            <Separator Height="15"></Separator>
+            <Label Foreground="White">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock>Epocas</TextBlock>
+                    <TextBox Width="100" Margin="5,0"></TextBox>
+                </StackPanel>
+            </Label>
+            <Button Margin="5,0" Height="30" Click="Entrenar" Background="{x:Null}" Foreground="white" BorderBrush="White" Content="Entrenar"/>
+                  <Separator Height="15"></Separator>      
         </StackPanel>
 
         <ScrollViewer Grid.Column="1">
