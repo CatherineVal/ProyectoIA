@@ -15,7 +15,7 @@
         <StackPanel Grid.Column="0" Background="#0379cc">
             <WrapPanel Name="puntosLetra" Height="180" Width="140" Background="White" Margin="0,5"/>
             
-            <Button Content="Limpiar" Background="{x:Null}" Width="45" Foreground="White" Click="Button_Click_1" BorderBrush="White" HorizontalAlignment="Left" Margin="5,0,0,5"/>
+            <Button Content="Limpiar" Background="{x:Null}" Width="45" Foreground="White" Click="Limpiar" BorderBrush="White" HorizontalAlignment="Left" Margin="5,0,0,5"/>
             <Separator Height="5"/>
             <Label Foreground="White">
                 <StackPanel Orientation="Horizontal">
@@ -35,8 +35,60 @@
                   <Separator Height="15"></Separator>      
         </StackPanel>
 
-        <ScrollViewer Grid.Column="1">
-            <TextBlock  Name="salida" TextWrapping="Wrap"></TextBlock>
-        </ScrollViewer>
+        <Grid Margin="5,5" Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height=".75*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <ScrollViewer  Grid.Row="0" Grid.Column="0">
+                <StackPanel Name="gridEntradas" Background="#0379cc" Margin="5">
+                    <TextBlock Foreground="White" HorizontalAlignment="Center">Entradas</TextBlock>
+                </StackPanel>
+            </ScrollViewer>
+            <ScrollViewer Grid.Row="0" Grid.Column="1">
+                <StackPanel Name="gridCapaOculta" Background="#0379cc" Margin="5">
+                    <TextBlock Foreground="White" HorizontalAlignment="Center">Capa Oculta</TextBlock>
+                </StackPanel>
+            </ScrollViewer>
+            <ScrollViewer Grid.Row="0" Grid.Column="2">
+                <StackPanel Name="gridCapaSalida" Background="#0379cc" Margin="5">
+                    <TextBlock Foreground="White" HorizontalAlignment="Center">Capa Salida</TextBlock>
+                </StackPanel>
+            </ScrollViewer>
+            <ScrollViewer Grid.Row="0" Grid.Column="3">
+                <StackPanel Name="gridEsperado" Background="#0379cc" Margin="5">
+                    <TextBlock Foreground="White" HorizontalAlignment="Center">Salida Esperada</TextBlock>
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer Grid.Row="1" Grid.Column="0">
+                <StackPanel Name="gridError" Background="#0379cc" Margin="5">
+                    <TextBlock Foreground="White" HorizontalAlignment="Center">Error por Epoca</TextBlock>
+                </StackPanel>
+            </ScrollViewer>
+            <ScrollViewer Grid.Row="1" Grid.Column="1">
+                <StackPanel Name="gridWco" Background="#0379cc" Margin="5">
+                    <TextBlock Foreground="White" HorizontalAlignment="Center">Pesos Capa Oculta</TextBlock>
+                </StackPanel>
+            </ScrollViewer>
+            <ScrollViewer Grid.Row="1" Grid.Column="2">
+                <StackPanel Name="gridWcs" Background="#0379cc" Margin="5">
+                    <TextBlock Foreground="White" HorizontalAlignment="Center">Pesos Capa Salida</TextBlock>
+                </StackPanel>
+            </ScrollViewer>
+            <ScrollViewer Grid.Row="1" Grid.Column="3">
+                <StackPanel Name="grid" Background="#0379cc" Margin="5">
+                    <TextBlock Foreground="White" HorizontalAlignment="Center">Letra Resultado</TextBlock>
+                </StackPanel>
+            </ScrollViewer>
+
+        </Grid>
     </Grid>
 </Window>
