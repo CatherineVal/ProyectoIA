@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
+using System.Windows.Documents.Serialization;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -20,7 +21,7 @@ namespace ProyectoIA_ScanLetras
     /// <summary>
     /// Lógica de interacción para MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window        
+    public partial class MainWindow : Window
     {
         const int NEURONASCAPAOCULTA = 3;
         const int NEURONASSALIDA = 5;
@@ -59,8 +60,8 @@ namespace ProyectoIA_ScanLetras
             patrones = System.IO.File.ReadAllLines("../../patrones.txt");
             targets = System.IO.File.ReadAllLines("../../targets.txt");
             npatrones = patrones.Length;
-            cboxLetras.ItemsSource = letras;
-
+            cboxLetras.ItemsSource = letras;            
+            
             /////////////////////////////////Inicializacion de objetos necesarios//////////////////////////////////          
 
             //Instanciacion de la capa oculta y la de salida
@@ -74,123 +75,23 @@ namespace ProyectoIA_ScanLetras
 
             //Inicializacion de los pesos de las capas
             Random r = new Random();
-            capaOculta.InicializaPesos(UMBRAL, ENTRADAS,r);
-            capaSalida.InicializaPesos(UMBRAL, NEURONASCAPAOCULTA,r);
+            capaOculta.InicializaPesos(UMBRAL, ENTRADAS, r);
+            capaSalida.InicializaPesos(UMBRAL, NEURONASCAPAOCULTA, r);
 
-            //Para dibujar las entradas
-            for (int i = 0; i < ENTRADAS; i++)
+            //mostrando pesos
+            for (int i = 0; i < NEURONASCAPAOCULTA; i++)
             {
-                gridEntradas.Children.Add(new Ellipse() { Height = 20, Width = 20, Fill = Brushes.Purple });
+                cboxCapaOculta.Items.Add($"Neurona {i + 1}");
             }
-            for (int i = 0; i < capaOculta.NEURONAS.Count; i++)
+            for (int i = 0; i < NEURONASSALIDA; i++)
             {
-                gridCapaOculta.Children.Add(new Ellipse() { Height = 20, Width = 20, Fill = Brushes.Purple });
+                cboxCapaSalida.Items.Add($"Neurona {i + 1}");
             }
-            for (int i = 0; i < capaSalida.NEURONAS.Count; i++)
-            {
-                gridCapaSalida.Children.Add(new Ellipse() { Height = 20, Width = 20, Fill = Brushes.Purple });
-            }
-            for (int i = 0; i < capaSalida.NEURONAS.Count; i++)
-            {
-                gridEsperado.Children.Add(new Ellipse() { Height = 20, Width = 20, Fill = Brushes.Purple });
-            }
+            cboxCapaSalida.SelectedIndex = 0;
+            cboxCapaOculta.SelectedIndex = 0;
 
             //Iniciamos Entrenamiento 
 
-            ////////////////////////////////Inicio del Entrenamiento retropropagacion//////////////////////////////            
-            //List<double> entradas;
-
-            ////Ciclo externo, segun el numero de epocas
-            //for (int i = 0; i < EPOCAS; i++)
-            //{
-
-            //    //Ciclo Interno, segun el numero de patrones de muestra
-            //    for (int j = 0; j < npatrones; j++)
-            //    {
-            //        //<----Paso 1----> ///////Propagar hacia adelante////////////////////////////////////////////////////////////////////////////
-
-            //        //Le pasamos las entradas recolecadas del archivo a la lista de entradas de la capa oculta
-            //        entradas = new List<double>();
-            //        for (int k = 0; k < patrones[j].Length; k++)
-            //        {
-            //            entradas.Add(Double.Parse(patrones[j].Substring(k, 1)));
-            //        }
-            //        capaOculta.ENTRADAS = entradas;
-
-            //        //Calculamos Y, Fy de la primera capa
-            //        capaOculta.CalcularY();
-            //        capaOculta.CalcularFy();
-
-            //        //Propagamos el vector Fy como entradas de la capa de salida                    
-            //        capaSalida.ENTRADAS = capaOculta.obtenerfys();
-
-            //        //Calculamos Y, Fy de la segunda capa
-            //        capaSalida.CalcularY();
-            //        capaSalida.CalcularFy();
-
-            //        //<----Paso 2----> ///////Propagar hacia atras////////////////////////////////////////////////////////////////////////////////
-
-            //        //Calculo del error, hay que transformar la cadena de estring a numeros, y los ceros a -1
-            //        List<double> t = new List<double>();
-            //        foreach (var item in targets.ElementAt(j))
-            //        {
-            //            if (item.Equals('0'))
-            //            {
-            //                t.Add(-1);
-            //            }
-            //            else
-            //            {
-            //                t.Add(1);
-            //            }
-            //        }
-            //        capaSalida.CalcularE(t);
-
-            //        //Calcular la sensibilidad de la ultima capa
-            //        capaSalida.CalcularSM();
-
-            //        //Calcular la sensibilidad de la capa oculta y de paso actualizamos pesos
-            //        Neurona neuronaTemp;
-            //        for (int l = 0; l < capaSalida.NEURONAS.Count; l++)
-            //        {
-            //            neuronaTemp = capaSalida.NEURONAS.ElementAt(l);
-            //            for (int k = 0; k < capaOculta.NEURONAS.Count; k++)
-            //            {
-            //                double sigw = neuronaTemp.PESOS.ElementAt(k);
-            //                double sigs = neuronaTemp.S;
-            //                capaOculta.NEURONAS.ElementAt(k).CalcularS(funcion, sigw, sigs);
-            //            }
-
-            //            //Actualizamos los pesos sinapticos de la ultima capa                        
-            //            List<double> wtemp = new List<double>();
-            //            for (int n = 0; n < neuronaTemp.PESOS.Count; n++)
-            //            {
-            //                wtemp.Add(neuronaTemp.PESOS.ElementAt(n) - ALFA * neuronaTemp.S * capaSalida.ENTRADAS.ElementAt(n));
-            //            }
-            //            neuronaTemp.PESOS = wtemp;
-            //            neuronaTemp.B -= ALFA * neuronaTemp.S;
-
-            //            //Actualizamos los pesos sinapticos de la capa oculta
-            //            wtemp = new List<double>();
-            //            foreach (var neurona in capaOculta.NEURONAS)
-            //            {
-            //                for (int m = 0; m < neurona.PESOS.Count; m++)
-            //                {
-            //                    wtemp.Add(neurona.PESOS.ElementAt(m) - ALFA * neurona.S * capaOculta.ENTRADAS.ElementAt(m));
-            //                }
-            //                neurona.B -= ALFA * neurona.S;
-            //            }
-
-            //        }
-            //        if (capaSalida.NEURONAS.First().E < 0.1)
-            //        {
-            //            break;
-            //        }
-
-            //    }
-
-            //}
-
-            /////////////////////////////////////////Fin Entrenamiento/////////////////////////////////////////////////////////
         }
 
         private void Entrenar(object sender, RoutedEventArgs e)
@@ -261,7 +162,7 @@ namespace ProyectoIA_ScanLetras
                         List<double> wtemp = new List<double>();
                         for (int n = 0; n < neuronaTemp.PESOS.Count; n++)
                         {
-                            wtemp.Add(neuronaTemp.PESOS.ElementAt(n) - ALFA * neuronaTemp.S * capaSalida.ENTRADAS.ElementAt(n));
+                            wtemp.Add(neuronaTemp.PESOS.ElementAt(n) - ((ALFA * neuronaTemp.S) * capaSalida.ENTRADAS.ElementAt(n)));
                         }
                         neuronaTemp.PESOS = wtemp;
                         neuronaTemp.B -= ALFA * neuronaTemp.S;
@@ -282,11 +183,15 @@ namespace ProyectoIA_ScanLetras
                 }
 
             }
+            //actualizar lls fy
+            actualizarListaPesos();
+            actualizarFYCapaOculta();
+            actualizarFYCapaSalida();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-           
+
         }
 
         private void cambio(object sender, RoutedEventArgs e)
@@ -300,7 +205,51 @@ namespace ProyectoIA_ScanLetras
             {
                 temp.Fill = Brushes.White;
             }
-            
+            actualizarListEntradas();
+        }
+
+        private void actualizarListEntradas()
+        {
+            gridEntradas.Children.Clear();
+            gridEntradas.Children.Add(new TextBlock() { Foreground = Brushes.White, HorizontalAlignment = HorizontalAlignment.Center, Text = "Entradas" });
+            int t = 1;
+            String txt;
+            foreach (var item in puntos)
+            {
+                if (item.Fill.Equals(Brushes.Black))
+                {
+                    txt = $"Entrada #{t}:\t 1";
+                }
+                else
+                {
+                    txt = $"Entrada #{t}:\t 0";
+                }
+                gridEntradas.Children.Add(new TextBlock() { Foreground = Brushes.White, Text = txt });
+                t++;
+            }
+        }
+
+        private void actualizarFYCapaOculta()
+        {
+            gridCapaOculta.Children.Clear();
+            gridCapaOculta.Children.Add(new TextBlock() { Foreground = Brushes.White, HorizontalAlignment = HorizontalAlignment.Center, Text = "Capa Oculta" });
+            int t = 1;
+            foreach (var item in capaOculta.NEURONAS)
+            {
+                gridCapaOculta.Children.Add(new TextBlock() { Foreground = Brushes.White, Text = $"N{t} F(y)={item.FY}", Margin = new Thickness(5, 0, 5, 0) });
+                t++;
+            }
+        }
+        private void actualizarFYCapaSalida()
+        {
+            gridCapaSalida.Children.Clear();
+            gridCapaSalida.Children.Add(new TextBlock() { Foreground = Brushes.White, HorizontalAlignment = HorizontalAlignment.Center, Text = "Capa Salida" });
+            int t = 1;
+            foreach (var item in capaSalida.NEURONAS)
+            {
+                gridCapaSalida.Children.Add(new TextBlock() { Foreground = Brushes.White, Text = $"N{t} F(y)={item.FY}", Margin = new Thickness(5, 0, 5, 0) });
+                t++;
+            }
         }
 
         private void VerificarLetra()
@@ -309,11 +258,11 @@ namespace ProyectoIA_ScanLetras
         }
 
         private void cboxLetras_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
+        {            
             if (cboxLetras.SelectedIndex>-1)
             {
                 for (int i = 0; i < patrones.ElementAt(cboxLetras.SelectedIndex).Length; i++)
-                {
+                {                   
                     if (patrones.ElementAt(cboxLetras.SelectedIndex).ElementAt(i) == '1')
                     {
                         puntos.ElementAt(i).Fill = Brushes.Black;
@@ -324,6 +273,7 @@ namespace ProyectoIA_ScanLetras
                     }
                 }
             }
+            actualizarListEntradas();
         }
 
         private void Limpiar(object sender, RoutedEventArgs e)
@@ -333,6 +283,46 @@ namespace ProyectoIA_ScanLetras
                 item.Fill = Brushes.White;
             }
             cboxLetras.SelectedIndex = -1;
+        }
+
+        private void actualizarListaPesos()
+        {
+            int c = 1;
+            gridWCapaOculta.Children.Clear();
+            foreach (var peso in capaOculta.NEURONAS.ElementAt(cboxCapaOculta.SelectedIndex).PESOS)
+            {
+                gridWCapaOculta.Children.Add(new TextBlock() { Text = $"W{cboxCapaOculta.SelectedIndex + 1}{c}:\t{peso}" });
+                c++;
+            }
+            c = 1;
+            gridWCapaSalida.Children.Clear();
+            foreach (var peso in capaSalida.NEURONAS.ElementAt(cboxCapaSalida.SelectedIndex).PESOS)
+            {
+                gridWCapaSalida.Children.Add(new TextBlock() { Text = $"W{cboxCapaSalida.SelectedIndex + 1} {c}:\t{peso}" });
+                c++;
+            }
+        }
+
+        private void cboxCapaOculta_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int c = 1;
+            gridWCapaOculta.Children.Clear();
+            foreach (var peso in capaOculta.NEURONAS.ElementAt((sender as ComboBox).SelectedIndex).PESOS)
+            {
+                gridWCapaOculta.Children.Add(new TextBlock() { Text = $"W{(sender as ComboBox).SelectedIndex + 1}{c}:\t{peso}" });
+                c++;
+            }
+        }
+        
+        private void cboxCapaSalida_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int c = 1;
+            gridWCapaSalida.Children.Clear();
+            foreach (var peso in capaSalida.NEURONAS.ElementAt((sender as ComboBox).SelectedIndex).PESOS)
+            {
+                gridWCapaSalida.Children.Add(new TextBlock() { Text = $"W{(sender as ComboBox).SelectedIndex + 1} {c}:\t{peso}" });
+                c++;
+            }
         }
     }
 
