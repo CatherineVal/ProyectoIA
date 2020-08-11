@@ -23,12 +23,12 @@
                     <ComboBox Name="cboxLetras" Margin="5,0" Width="100" SelectionChanged="cboxLetras_SelectionChanged"/>
                 </StackPanel>
             </Label>
-            <Button Content="Calcular Salida" Foreground="White" Background="{x:Null}" Height="30" Margin="5,0" Click="Button_Click" BorderBrush="White"/>
+            <Button Content="Calcular Salida" Foreground="White" Background="{x:Null}" Height="30" Margin="5,0" Click="VerificarLetra" BorderBrush="White"/>
             <Separator Height="15"></Separator>
             <Label Foreground="White">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock>Epocas</TextBlock>
-                    <TextBox Width="100" Margin="5,0"></TextBox>
+                    <TextBox Name="txtepocas" Width="100" Margin="5,0" TextChanged="txtepocas_TextChanged"/>
                 </StackPanel>
             </Label>
             <Button Margin="5,0" Height="30" Click="Entrenar" Background="{x:Null}" Foreground="white" BorderBrush="White" Content="Entrenar"/>
@@ -48,29 +48,34 @@
             </Grid.ColumnDefinitions>
 
             <ScrollViewer  Grid.Row="0" Grid.Column="0" HorizontalScrollBarVisibility="Auto" Margin="5">
-                <StackPanel Name="gridEntradas" Background="#0379cc">
+                <StackPanel Background="#0379cc">
                     <TextBlock Foreground="White" HorizontalAlignment="Center">Entradas</TextBlock>
+                    <StackPanel Name="gridEntradas" />
                 </StackPanel>
             </ScrollViewer>
             <ScrollViewer Grid.Row="0" Grid.Column="1" HorizontalScrollBarVisibility="Auto" Margin="5">
-                <StackPanel Name="gridCapaOculta" Background="#0379cc">
+                <StackPanel  Background="#0379cc">
                     <TextBlock Foreground="White" HorizontalAlignment="Center">Capa Oculta</TextBlock>
-                </StackPanel>
+                    <StackPanel Name="gridCapaOculta"/>
+                </StackPanel>                
             </ScrollViewer>
             <ScrollViewer Grid.Row="0" Grid.Column="2" HorizontalScrollBarVisibility="Auto" Margin="5">
-                <StackPanel Name="gridCapaSalida" Background="#0379cc">
+                <StackPanel Background="#0379cc">
                     <TextBlock Foreground="White" HorizontalAlignment="Center">Capa Salida</TextBlock>
+                    <StackPanel Name="gridCapaSalida" />
                 </StackPanel>
             </ScrollViewer>
             <ScrollViewer Grid.Row="0" Grid.Column="3" HorizontalScrollBarVisibility="Auto" Margin="5">
-                <StackPanel Name="gridEsperado" Background="#0379cc">
+                <StackPanel Background="#0379cc">
                     <TextBlock Foreground="White" HorizontalAlignment="Center">Salida Esperada</TextBlock>
+                    <StackPanel Name="gridEsperado" />
                 </StackPanel>
             </ScrollViewer>
 
             <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Auto" Margin="5">
-                <StackPanel Name="gridError" Background="#0379cc">
-                    <TextBlock Foreground="White" HorizontalAlignment="Center">Error por Epoca</TextBlock>
+                <StackPanel Background="#0379cc">
+                    <TextBlock Foreground="White" HorizontalAlignment="Center">Error por Prueba</TextBlock>
+                    <StackPanel Name="gridError" />
                 </StackPanel>
             </ScrollViewer>
             <ScrollViewer Grid.Row="1" Grid.Column="1" HorizontalScrollBarVisibility="Auto" Margin="5">
@@ -88,9 +93,10 @@
                 </StackPanel>
             </ScrollViewer>
             <ScrollViewer Grid.Row="1" Grid.Column="3" HorizontalScrollBarVisibility="Auto" Margin="5">
-                <StackPanel Name="grid" Background="#0379cc">
+                <StackPanel Background="#0379cc">
                     <TextBlock Foreground="White" HorizontalAlignment="Center">Letra Resultado</TextBlock>
-                </StackPanel>
+                    <StackPanel Name="gridResultado"/>
+                </StackPanel>                
             </ScrollViewer>
 
         </Grid>
